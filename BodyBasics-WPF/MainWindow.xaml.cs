@@ -919,6 +919,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 var result = streamReader.ReadToEnd();
                 Console.WriteLine(result);
             }
+            this.checkType = "";
+            resetState();
         }
 
         private void recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -943,6 +945,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             else if (t == "Pause Workout")
             {
                 this.checkType = "";
+                resetState();
             }
         }
 
