@@ -160,6 +160,9 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private bool inCoolDown = false;
         private Double coolDownStart = 0;
 
+        private int errorCount = 0;
+        private string patientName = "Calder White"; // you really looked in the source code to see if this was hard coded eh? :))
+
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -696,7 +699,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             Vector3D spineMid = new Vector3D(spineMidJoint.Position.X, spineMidJoint.Position.Y, spineMidJoint.Position.Z);
             Vector3D spineShoulder = new Vector3D(spineShoulderJoint.Position.X, spineShoulderJoint.Position.Y, spineShoulderJoint.Position.Z);
 
-
             //this.LeftAngleText = spineBase.X.ToString();
             //this.RightAngleText = spineShoulder.X.ToString();
 
@@ -747,6 +749,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         this.firstBad = currentTime;
                         this.inCoolDown = true;
                         this.coolDownStart = (Double)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds / 1000;
+                        ++this.errorCount;
                     }
                 }
             }
@@ -775,6 +778,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         this.spine_firstBad = currentTime;
                         this.inCoolDown = true;
                         this.coolDownStart = (Double)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds / 1000;
+                        ++this.errorCount;
                     }
                 }
             }
@@ -867,6 +871,33 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         public void CurlClick(object sender, EventArgs e)
         {
             this.checkType = "curl";
+        }
+
+        public void StartWorkoutClick(object sender, EventArgs e)
+        {
+            this.errorCount = 0;
+        }
+
+        public void StopWorkoutClick(object sender, EventArgs e)
+        {
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:5000/accept_workout");
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "POST";
+            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            {
+                Dictionary<string, dynamic> obj = new Dictionary<string, dynamic>();
+                obj["errorCount"] = this.errorCount;
+                obj["patientName"] = this.patientName;
+                string json = JsonConvert.SerializeObject(obj);
+                streamWriter.Write(json);
+            }
+
+            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                var result = streamReader.ReadToEnd();
+                Console.WriteLine(result);
+            }
         }
     }
 }

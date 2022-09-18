@@ -4,29 +4,31 @@
         Title="Body Basics" 
         Height="600" Width="700" 
         Loaded="MainWindow_Loaded"
-        Closing="MainWindow_Closing"> 
-  <Window.Resources>
-    <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e" />
-    <SolidColorBrush x:Key="KinectPurpleBrush" Color="#ff52318f" />
-    <SolidColorBrush x:Key="KinectBlueBrush" Color="#ff00BCF2" />
-  </Window.Resources>
-  <Grid Margin="10 0 10 0">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
+        Closing="MainWindow_Closing">
+    <Window.Resources>
+        <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e" />
+        <SolidColorBrush x:Key="KinectPurpleBrush" Color="#ff52318f" />
+        <SolidColorBrush x:Key="KinectBlueBrush" Color="#ff00BCF2" />
+    </Window.Resources>
+    <Grid Margin="10 0 10 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-    <Viewbox Grid.Row="1" HorizontalAlignment="Center" Margin="0,73,0,0">
-      <Image Source="{Binding ImageSource}" Stretch="UniformToFill" />
-    </Viewbox>
-      
-    <StatusBar Grid.Row="2" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
-      <StatusBarItem Content="{Binding StatusText}" />
-    </StatusBar>
+        <Viewbox Grid.Row="1" HorizontalAlignment="Center" Margin="0,73,0,0">
+            <Image Source="{Binding ImageSource}" Stretch="UniformToFill" />
+        </Viewbox>
+
+        <StatusBar Grid.Row="2" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
+            <StatusBarItem Content="{Binding StatusText}" />
+        </StatusBar>
         <TextBlock HorizontalAlignment="Left" Margin="10,2,0,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding LeftAngleText}"  VerticalAlignment="Top" FontSize="47"/>
-        <Button Content="Squat" HorizontalAlignment="Left" Margin="40,10,0,0" Grid.RowSpan="2" VerticalAlignment="Top" FontSize="36" Click="SquatClick" />
-        <Button Content="Curl" HorizontalAlignment="Left" Margin="245,10,0,0" Grid.RowSpan="2" VerticalAlignment="Top" FontSize="36" Click="CurlClick"/>
+        <Button Content="Squat" HorizontalAlignment="Left" Margin="15,12,0,0" Grid.RowSpan="2" VerticalAlignment="Top" FontSize="36" Click="SquatClick" />
+        <Button Content="Curl" HorizontalAlignment="Left" Margin="122,12,0,0" Grid.RowSpan="2" VerticalAlignment="Top" FontSize="36" Click="CurlClick"/>
+        <Button Content="Start Workout" HorizontalAlignment="Left" Margin="209,13,0,0" Grid.Row="1" VerticalAlignment="Top" FontSize="36" Click="StartWorkoutClick"/>
+        <Button Content="Stop Workout" HorizontalAlignment="Left" Margin="446,13,0,0" Grid.Row="1" VerticalAlignment="Top" FontSize="36" Click="StopWorkoutClick"/>
 
     </Grid>
 </Window>
