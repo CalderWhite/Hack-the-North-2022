@@ -163,6 +163,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private int errorCount = 0;
         private string patientName = "Calder White"; // you really looked in the source code to see if this was hard coded eh? :))
 
+        private SpeechRecognitionEngine recognizer;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -188,57 +189,60 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // a bone defined as a line between two joints
             this.bones = new List<Tuple<JointType, JointType>>();
 
-            // Torso
             {
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.Head, JointType.Neck));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.Neck, JointType.SpineShoulder));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.SpineMid));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineMid, JointType.SpineBase));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderRight));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderLeft));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipRight));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipLeft));
+                // Torso
+                {
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.Head, JointType.Neck));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.Neck, JointType.SpineShoulder));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.SpineMid));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineMid, JointType.SpineBase));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderRight));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderLeft));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipRight));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipLeft));
+                }
+
+                // Right Arm
+                {
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderRight, JointType.ElbowRight));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.ElbowRight, JointType.WristRight));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.HandRight));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.HandRight, JointType.HandTipRight));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.ThumbRight));
+                }
+
+                // Left Arm
+                {
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderLeft, JointType.ElbowLeft));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.ElbowLeft, JointType.WristLeft));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.HandLeft));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.HandLeft, JointType.HandTipLeft));
+                    this.bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.ThumbLeft));
+                }
+
+
+                // Right Leg
+                this.bones.Add(new Tuple<JointType, JointType>(JointType.HipRight, JointType.KneeRight));
+                this.bones.Add(new Tuple<JointType, JointType>(JointType.KneeRight, JointType.AnkleRight));
+                this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleRight, JointType.FootRight));
+
+                // Left Leg
+                this.bones.Add(new Tuple<JointType, JointType>(JointType.HipLeft, JointType.KneeLeft));
+                this.bones.Add(new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft)); // we want this one
+                this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft)); // want this one
+
+
+                // populate body colors, one for each BodyIndex
+                this.bodyColors = new List<Pen>();
+
+                this.bodyColors.Add(new Pen(Brushes.Red, 6));
+                this.bodyColors.Add(new Pen(Brushes.Orange, 6));
+                this.bodyColors.Add(new Pen(Brushes.Green, 6));
+                this.bodyColors.Add(new Pen(Brushes.Blue, 6));
+                this.bodyColors.Add(new Pen(Brushes.Indigo, 6));
+                this.bodyColors.Add(new Pen(Brushes.Violet, 6));
+
             }
-
-            // Right Arm
-            {
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderRight, JointType.ElbowRight));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.ElbowRight, JointType.WristRight));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.HandRight));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.HandRight, JointType.HandTipRight));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.ThumbRight));
-            }
-
-            // Left Arm
-            {
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderLeft, JointType.ElbowLeft));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.ElbowLeft, JointType.WristLeft));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.HandLeft));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.HandLeft, JointType.HandTipLeft));
-                this.bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.ThumbLeft));
-            }
-
-
-            // Right Leg
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.HipRight, JointType.KneeRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.KneeRight, JointType.AnkleRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleRight, JointType.FootRight));
-
-            // Left Leg
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.HipLeft, JointType.KneeLeft));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft)); // we want this one
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft)); // want this one
-
-
-            // populate body colors, one for each BodyIndex
-            this.bodyColors = new List<Pen>();
-
-            this.bodyColors.Add(new Pen(Brushes.Red, 6));
-            this.bodyColors.Add(new Pen(Brushes.Orange, 6));
-            this.bodyColors.Add(new Pen(Brushes.Green, 6));
-            this.bodyColors.Add(new Pen(Brushes.Blue, 6));
-            this.bodyColors.Add(new Pen(Brushes.Indigo, 6));
-            this.bodyColors.Add(new Pen(Brushes.Violet, 6));
 
             // set IsAvailableChanged event notifier
             this.kinectSensor.IsAvailableChanged += this.Sensor_IsAvailableChanged;
@@ -289,8 +293,20 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
             }
 
+
             // initialize the components (controls) of the window
             this.InitializeComponent();
+
+            this.recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("en-US"));
+            this.recognizer.LoadGrammar(CreateAppGrammar());
+            this.recognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);
+            recognizer.SetInputToDefaultAudioDevice();
+
+            var a = SpeechRecognitionEngine.InstalledRecognizers()[0];
+            Console.WriteLine($"{a.Name} {a.Culture} {a.Id}");
+
+            // Start asynchronous, continuous speech recognition.  
+            recognizer.RecognizeAsync(RecognizeMode.Multiple);
         }
 
         private void resetState()
@@ -880,6 +896,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         public void StopWorkoutClick(object sender, EventArgs e)
         {
+            StopWorkout();
+        }
+
+        private void StopWorkout()
+        {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:5000/accept_workout");
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
@@ -898,6 +919,73 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 var result = streamReader.ReadToEnd();
                 Console.WriteLine(result);
             }
+        }
+
+        private void recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        {
+            Console.WriteLine("Recognized text: " + e.Result.Text);
+            string t = e.Result.Text;
+            if (t == "Start squat")
+            {
+                this.checkType = "squat";
+            } else if (t == "Start curl")
+            {
+                this.checkType = "curl";
+            }
+            else if (t == "Start workout")
+            {
+                this.errorCount = 0;
+            }
+            else if (t == "Stop workout")
+            {
+                StopWorkout();
+            }
+            else if (t == "Pause Workout")
+            {
+                this.checkType = "";
+            }
+        }
+
+        private Grammar CreateAppGrammar()
+        {
+
+            //Choices colorChoice = new Choices(new string[] { "red", "green", "blue" });
+            //GrammarBuilder colorElement = new GrammarBuilder(colorChoice);
+
+            // Create grammar builders for the two versions of the phrase.  
+            GrammarBuilder squat = new GrammarBuilder("Start squat");
+            GrammarBuilder curl = new GrammarBuilder("Start curl");
+            GrammarBuilder startWorkout = new GrammarBuilder("Start workout");
+            GrammarBuilder stopWorkout = new GrammarBuilder("Stop workout");
+            GrammarBuilder pauseWorkout = new GrammarBuilder("Pause Workout");
+
+            // Create a Choices for the two alternative phrases, convert the Choices  
+            // to a GrammarBuilder, and construct the grammar from the result.  
+            Choices bothChoices = new Choices(new GrammarBuilder[] { squat, curl, startWorkout, stopWorkout, pauseWorkout });
+            Grammar grammar = new Grammar((GrammarBuilder)bothChoices);
+            grammar.Name = "HackTheNorth2022";
+            return grammar;
+        }
+        private Grammar CreateColorGrammar()
+        {
+
+            // Create a set of color choices.  
+            Choices colorChoice = new Choices(new string[] { "red", "green", "blue" });
+
+            // Create grammar builders for the two versions of the phrase.  
+            GrammarBuilder makePhrase =
+              GrammarBuilder.Add((GrammarBuilder)"Make background", colorChoice);
+            GrammarBuilder setPhrase =
+              GrammarBuilder.Add("Set background to", (GrammarBuilder)colorChoice);
+
+            // Create a Choices for the two alternative phrases, convert the Choices  
+            // to a GrammarBuilder, and construct the grammar from the result.  
+            Choices bothChoices = new Choices(new GrammarBuilder[] { makePhrase, setPhrase });
+            GrammarBuilder bothPhrases = new GrammarBuilder(bothChoices);
+
+            Grammar grammar = new Grammar(bothPhrases);
+            grammar.Name = "backgroundColor";
+            return grammar;
         }
     }
 }
