@@ -1,7 +1,7 @@
 # Hack-the-North-2022
 Physiotherapy tool to track patients' progress and improve their form at home!
 
-## Link to Prototypes
+## Links to Prototypes
 - UI for Patients: https://tinyurl.com/bdeddw7c
 - UI for Physiotherapists: https://tinyurl.com/fda3wett
 
